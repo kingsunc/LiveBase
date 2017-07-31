@@ -507,13 +507,15 @@ DWORD WINAPI RtmpPublisher::Th_Audio_Cmd(LPVOID lpParam)
 	assert(pThis);
 
 	memset(&pThis->waveform, 0, sizeof(WAVEFORMATEX));
+	int iChannels = pThis->m_audioInfo.channels;
+	int iBitsPerSample = pThis->m_audioInfo.bits;
 	pThis->waveform.wFormatTag = WAVE_FORMAT_PCM;					// 声音格式为PCM;
 	pThis->waveform.nSamplesPerSec = pThis->m_audioInfo.samples;	// 采样率;
-	pThis->waveform.wBitsPerSample = pThis->m_audioInfo.bits;		// 采样比特，16bits/次;
-	pThis->waveform.nChannels = pThis->m_audioInfo.channels;		// 采样声道数，2声道;  
+	pThis->waveform.wBitsPerSample = iBitsPerSample;				// 采样比特，16bits/次;
+	pThis->waveform.nChannels = iChannels;							// 采样声道数，2声道;  
 	pThis->waveform.nAvgBytesPerSec = pThis->m_audioInfo.bps;		// 每秒的数据率，就是每秒能采集多少字节的数据;  
-	pThis->waveform.nBlockAlign = 2 * pThis->m_audioInfo.channels;	// 一个块的大小，采样bit的字节数乘以声道数;
-	pThis->waveform.cbSize = 0;										// 一般为0;
+	pThis->waveform.nBlockAlign = (iChannels * iBitsPerSample) / 8;	// 一个块的大小，采样bit的bits数乘以声道数/8;
+	pThis->waveform.cbSize = 0;										// 额外外信息大小, 一般为0;
 
 	HANDLE wait = CreateEvent(NULL, 0, 0, NULL);
 	// 使用waveInOpen函数开启音频采集;
