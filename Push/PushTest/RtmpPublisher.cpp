@@ -150,7 +150,6 @@ void RtmpPublisher::AddAudio(const CByteArray& arrBuff)
 	m_listAudioBuff.Append(arrBuff);
 	while (m_listAudioBuff.GetSize() >= 40960)
 	{
-		//  max 23x10 ms delay  40960=4096*10;
 		m_listAudioBuff.RemoveAt(0, 20480);
 	}
 
